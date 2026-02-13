@@ -3,6 +3,7 @@ class SFDCReportAnalyzer {
     constructor() {
         this.uploadedFiles = [];
         this.maxFiles = 5;
+        this.MAX_CONTENT_LENGTH = 10000;
         this.apiKey = localStorage.getItem('gemini_api_key') || '';
         this.initializeElements();
         this.attachEventListeners();
@@ -231,9 +232,9 @@ class SFDCReportAnalyzer {
         fileContents.forEach((file, index) => {
             prompt += `--- Report ${index + 1}: ${file.name} ---\n`;
             // Limit content to prevent token overflow
-            const contentPreview = file.content.substring(0, 10000);
+            const contentPreview = file.content.substring(0, this.MAX_CONTENT_LENGTH);
             prompt += contentPreview;
-            if (file.content.length > 10000) {
+            if (file.content.length > this.MAX_CONTENT_LENGTH) {
                 prompt += '\n... (content truncated for analysis)';
             }
             prompt += `\n\n`;
@@ -260,7 +261,6 @@ class SFDCReportAnalyzer {
                 }],
                 generationConfig: {
                     temperature: 0.7,
-                    topK: 40,
                     topP: 0.95,
                     maxOutputTokens: 8192,
                 }
@@ -282,8 +282,15 @@ class SFDCReportAnalyzer {
     }
 
     displayResults(analysis) {
-        // Convert markdown-style formatting to HTML
-        let htmlContent = analysis
+        // Sanitize and convert markdown-style formatting to HTML safely
+        const escapeHtml = (text) => {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        };
+
+        // Escape HTML then apply markdown formatting
+        let htmlContent = escapeHtml(analysis)
             .replace(/### (.*?)(\n|$)/g, '<h3>$1</h3>')
             .replace(/## (.*?)(\n|$)/g, '<h3>$1</h3>')
             .replace(/# (.*?)(\n|$)/g, '<h3>$1</h3>')
@@ -303,20 +310,18 @@ class SFDCReportAnalyzer {
 
     showMessage(message, type) {
         const messageClass = type === 'error' ? 'error-message' : 'success-message';
-        const messageHTML = `
-            <div class="${messageClass}">
-                ${message}
-            </div>
-        `;
+        
+        // Create message element safely without innerHTML
+        const messageDiv = document.createElement('div');
+        messageDiv.className = messageClass;
+        messageDiv.textContent = message;
         
         // Insert message after action section or at top of results
         const insertPoint = this.actionSection.style.display !== 'none' 
             ? this.actionSection 
             : this.resultsSection;
         
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = messageHTML;
-        insertPoint.parentNode.insertBefore(tempDiv.firstChild, insertPoint.nextSibling);
+        insertPoint.parentNode.insertBefore(messageDiv, insertPoint.nextSibling);
         
         // Remove message after 5 seconds
         setTimeout(() => {
