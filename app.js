@@ -289,19 +289,51 @@ class SFDCReportAnalyzer {
             return div.innerHTML;
         };
 
-        // Escape HTML then apply markdown formatting
-        let htmlContent = escapeHtml(analysis)
-            .replace(/### (.*?)(\n|$)/g, '<h3>$1</h3>')
-            .replace(/## (.*?)(\n|$)/g, '<h3>$1</h3>')
-            .replace(/# (.*?)(\n|$)/g, '<h3>$1</h3>')
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/\n\n/g, '</p><p>')
-            .replace(/^(.+)$/gm, '<p>$1</p>')
-            .replace(/- (.*?)(?=<\/p>)/g, '<li>$1</li>')
-            .replace(/(<li>.*?<\/li>)/gs, '<ul>$1</ul>');
+        // Split into lines for better processing
+        const lines = escapeHtml(analysis).split('\n');
+        const htmlLines = [];
+        const listItems = [];
+        
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+            
+            // Check if it's a list item
+            if (line.match(/^- /)) {
+                listItems.push('<li>' + line.substring(2) + '</li>');
+                continue;
+            } else if (listItems.length > 0) {
+                // Close previous list
+                htmlLines.push('<ul>' + listItems.join('') + '</ul>');
+                listItems.length = 0;
+            }
+            
+            // Convert headers
+            if (line.match(/^### /)) {
+                line = '<h3>' + line.substring(4) + '</h3>';
+            } else if (line.match(/^## /)) {
+                line = '<h3>' + line.substring(3) + '</h3>';
+            } else if (line.match(/^# /)) {
+                line = '<h3>' + line.substring(2) + '</h3>';
+            } else if (line.trim() === '') {
+                line = '<br>';
+            } else if (!line.match(/^</)) {
+                // Only wrap in <p> if not already an HTML tag
+                line = '<p>' + line + '</p>';
+            }
+            
+            // Apply inline formatting (bold and italic)
+            line = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            line = line.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+            
+            htmlLines.push(line);
+        }
+        
+        // Close any remaining list
+        if (listItems.length > 0) {
+            htmlLines.push('<ul>' + listItems.join('') + '</ul>');
+        }
 
-        this.resultsContent.innerHTML = htmlContent;
+        this.resultsContent.innerHTML = htmlLines.join('\n');
         this.resultsSection.style.display = 'block';
         
         // Scroll to results

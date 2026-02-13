@@ -18,7 +18,9 @@ A simple GitHub Pages application for uploading and analyzing Salesforce (SFDC) 
 1. Go to your repository Settings → Pages
 2. Under "Source", select the branch you want to deploy (e.g., `main` or `copilot/build-github-pages-app`)
 3. Click Save
-4. Your site will be available at `https://newrelic-copilot.github.io/scorecard-v2/`
+4. Your site will be available at `https://<username>.github.io/<repository-name>/`
+   - Replace `<username>` with your GitHub username or organization name
+   - Replace `<repository-name>` with your repository name
 
 ### Getting a Gemini API Key
 
