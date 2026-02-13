@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SFDC Report Analyzer - Team Scorecard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 SFDC Report Analyzer</h1>
+            <p class="subtitle">Upload up to 5 Salesforce reports for AI-powered analysis</p>
+        </header>
+
+        <div class="upload-section">
+            <div class="upload-box" id="uploadBox">
+                <div class="upload-icon">📁</div>
+                <h2>Upload SFDC Reports</h2>
+                <p>Click to select or drag and drop files here</p>
+                <p class="file-info">Supported formats: CSV, XLS, XLSX (Max 5 files)</p>
+                <input type="file" id="fileInput" multiple accept=".csv,.xls,.xlsx" style="display: none;">
+                <button id="selectFilesBtn" class="btn btn-primary">Select Files</button>
+            </div>
+
+            <div class="files-list" id="filesList"></div>
+
+            <div class="api-key-section" id="apiKeySection" style="display: none;">
+                <h3>🔑 API Configuration</h3>
+                <p class="info-text">To analyze the reports, please provide your Google Gemini API key:</p>
+                <div class="api-input-group">
+                    <input type="password" id="apiKeyInput" placeholder="Enter your Gemini API key" class="api-input">
+                    <button id="saveApiKeyBtn" class="btn btn-secondary">Save Key</button>
+                </div>
+                <p class="help-text">
+                    Don't have an API key? Get one from 
+                    <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a>
+                </p>
+            </div>
+
+            <div class="action-section" id="actionSection" style="display: none;">
+                <button id="analyzeBtn" class="btn btn-success">🤖 Analyze Reports</button>
+                <button id="clearBtn" class="btn btn-danger">Clear All</button>
+            </div>
+        </div>
+
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <h2>📈 Analysis Results</h2>
+            <div class="results-content" id="resultsContent"></div>
+        </div>
+
+        <div class="loading" id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Analyzing your reports...</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>Team Scorecard v2.0 | Powered by Google Gemini AI</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
