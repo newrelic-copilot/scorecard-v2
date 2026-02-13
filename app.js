@@ -297,8 +297,8 @@ class SFDCReportAnalyzer {
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i];
             
-            // Check if it's a list item
-            if (line.match(/^- /)) {
+            // Check if it's a list item (support -, *, +)
+            if (line.match(/^[-*+] /)) {
                 listItems.push('<li>' + line.substring(2) + '</li>');
                 continue;
             } else if (listItems.length > 0) {
@@ -321,9 +321,9 @@ class SFDCReportAnalyzer {
                 line = '<p>' + line + '</p>';
             }
             
-            // Apply inline formatting (bold and italic)
-            line = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            // Apply inline formatting (italic first, then bold to avoid conflicts)
             line = line.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+            line = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
             
             htmlLines.push(line);
         }
@@ -355,10 +355,11 @@ class SFDCReportAnalyzer {
         
         insertPoint.parentNode.insertBefore(messageDiv, insertPoint.nextSibling);
         
-        // Remove message after 5 seconds
+        // Remove this specific message after 5 seconds
         setTimeout(() => {
-            const messageEl = document.querySelector(`.${messageClass}`);
-            if (messageEl) messageEl.remove();
+            if (messageDiv.parentNode) {
+                messageDiv.parentNode.removeChild(messageDiv);
+            }
         }, 5000);
     }
 
