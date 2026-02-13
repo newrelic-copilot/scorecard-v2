@@ -298,7 +298,7 @@ class SFDCReportAnalyzer {
             let line = lines[i];
             
             // Check if it's a list item (support -, *, +)
-            if (line.match(/^[-*+] /)) {
+            if (line.match(/^[*+-] /)) {
                 listItems.push('<li>' + line.substring(2) + '</li>');
                 continue;
             } else if (listItems.length > 0) {
@@ -321,9 +321,9 @@ class SFDCReportAnalyzer {
                 line = '<p>' + line + '</p>';
             }
             
-            // Apply inline formatting (italic first, then bold to avoid conflicts)
-            line = line.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+            // Apply inline formatting (bold first, then italic to avoid pattern conflicts)
             line = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            line = line.replace(/\*([^*]+)\*/g, '<em>$1</em>');
             
             htmlLines.push(line);
         }
