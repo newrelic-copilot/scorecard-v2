@@ -322,8 +322,8 @@ class SFDCReportAnalyzer {
             }
             
             // Apply inline formatting (bold first, then italic to avoid pattern conflicts)
-            line = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-            line = line.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+            line = line.replace(/\*\*([^*\n]+?)\*\*/g, '<strong>$1</strong>');
+            line = line.replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
             
             htmlLines.push(line);
         }
